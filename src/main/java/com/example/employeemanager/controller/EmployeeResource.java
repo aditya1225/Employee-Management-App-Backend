@@ -4,6 +4,7 @@ import com.example.employeemanager.model.Employee;
 import com.example.employeemanager.service.EmployeeService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -25,7 +26,7 @@ public class EmployeeResource {
     }
 
     @GetMapping("/find/{id}")
-    public ResponseEntity<List<Employee>> getEmployeeById(@PathVariable("id") Long id){
+    public ResponseEntity<Employee> getEmployeeById(@PathVariable("id") Long id){
         Employee employee = employeeService.findEmployee(id);
         return new ResponseEntity<>(employee, HttpStatus.OK);
     }
@@ -37,8 +38,10 @@ public class EmployeeResource {
     }
 
     @PutMapping("/update")
+    @Transactional
     public ResponseEntity<Employee> updateEmployee(@RequestBody Employee employee){
-        Employee updateemp=employeeService.updateEmployee(employee);
+        employeeService.deleteEmployee(employee.getId());
+        Employee updateemp=employeeService.addEmployee(employee);
         return new ResponseEntity<>(updateemp, HttpStatus.OK);
     }
 
